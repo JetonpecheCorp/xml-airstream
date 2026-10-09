@@ -1,0 +1,47 @@
+{
+  "name": "xml-airstream",
+  "version": "1.0.0",
+  "description": "Fast, zero-dependency streaming XML parser, serializer & decorator-based class mapper using a state-machine lexer.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JetonpecheCorp/xml-airstream.git"
+  },
+"keywords": [
+    "xml",
+    "xml-parser",
+    "streaming",
+    "stream",
+    "lexer",
+    "state-machine",
+    "ast",
+    "serializer",
+    "decorators",
+    "object-mapper",
+    "xml-to-json",
+    "json-to-xml",
+    "zero-dependency"
+  ],
+  "author": "jetonpeche",
+  "license": "MIT",
+  "readme": "https://github.com/JetonpecheCorp/xml-airstream#readme",
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2"
+  }
+}
