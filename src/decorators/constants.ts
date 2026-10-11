@@ -10,5 +10,6 @@ export const METADATA_KEYS = {
     IGNORE: 'xml:ignore',
     VALUE: 'xml:value',
     ARRAYS: 'xml:arrays',
-    CDATA: 'xml:cdata'
+    CDATA: 'xml:cdata',
+    TRANSFORMS: 'xml:transforms'
 } as const;

@@ -23,6 +23,7 @@ export class JsonConverter
         const proprieteValeur = metadonnees[METADATA_KEYS.VALUE] as string | undefined;
         const dictionnaireTypes = (metadonnees[METADATA_KEYS.ELEMENT_TYPES] as Record<string, new () => any>) || {};
         const dictionnaireTableaux = (metadonnees[METADATA_KEYS.ARRAYS] as Record<string, any>) || {};
+        const dictionnaireTransforms = (metadonnees[METADATA_KEYS.TRANSFORMS] as Record<string, any>) || {};
 
         const xmlVersPropriete: Record<string, string> = {};
         for (const [prop, xmlTag] of Object.entries(dictionnaireElements))
@@ -46,14 +47,18 @@ export class JsonConverter
             {
                 if (proprieteValeur && !ensembleIgnores.has(proprieteValeur))
                 {
-                    instance[proprieteValeur] = this.convertirType(
-                        valeurXml, 
-                        typeof instance[proprieteValeur], 
+                    let valeurConvertie = this.convertirType(
+                        valeurXml,
+                        typeof instance[proprieteValeur],
                         instance[proprieteValeur],
                         options
                     );
-                }
 
+                    if (dictionnaireTransforms[proprieteValeur]?.read)
+                        valeurConvertie = dictionnaireTransforms[proprieteValeur].read(valeurConvertie);
+
+                    instance[proprieteValeur] = valeurConvertie;
+                }
                 continue;
             }
 
@@ -87,10 +92,14 @@ export class JsonConverter
                 const listeElements: any[] = Array.isArray(elementsExtraits) ? elementsExtraits : [elementsExtraits];
 
                 // On instancie chaque élément du tableau
-                instance[nomPropriete] = listeElements.map((item: any) =>
-                    ConfigTableau.itemType ? this.instancierEtMapper(item, ConfigTableau.itemType, options) : item // <-- options
+                let resultatTableau = listeElements.map((item: any) =>
+                    ConfigTableau.itemType ? this.instancierEtMapper(item, ConfigTableau.itemType, options) : item
                 );
 
+                if (dictionnaireTransforms[nomPropriete]?.read)
+                    resultatTableau = dictionnaireTransforms[nomPropriete].read(resultatTableau);
+
+                instance[nomPropriete] = resultatTableau;
                 continue; // Fin du traitement pour cette propriété
             }
 
@@ -107,7 +116,13 @@ export class JsonConverter
             {
                 // Traitement pour les valeurs primitives (texte, nombres...)
                 const typeAttendu = typeof instance[nomPropriete];
-                instance[nomPropriete] = this.convertirType(valeurXml, typeAttendu, instance[nomPropriete], options);
+                let valeurConvertie = this.convertirType(valeurXml, typeAttendu, instance[nomPropriete], options);
+
+                // Application du transformRead s'il existe
+                if (dictionnaireTransforms[nomPropriete]?.read)
+                    valeurConvertie = dictionnaireTransforms[nomPropriete].read(valeurConvertie);
+
+                instance[nomPropriete] = valeurConvertie;
             }
         }
 
@@ -119,7 +134,7 @@ export class JsonConverter
         if (valeur === undefined || valeur === null) return valeur;
 
         // Si la valeur venant du XML est déjà un objet, on la laisse
-        if (typeof valeur === 'object') 
+        if (typeof valeur === 'object')
             return valeur;
 
         if (valeurParDefaut instanceof Date)
@@ -136,17 +151,17 @@ export class JsonConverter
 
             case 'boolean':
                 const valStr = String(valeur).toLowerCase().trim();
-                
+
                 // Si l'utilisateur a fourni ses propres mots-clés :
-                if (options?.trueValues && options.trueValues.length > 0) 
+                if (options?.trueValues && options.trueValues.length > 0)
                     return options.trueValues.some(motCle => motCle.toLowerCase() === valStr);
-                
+
                 // Comportement par défaut si rien n'est configuré :
                 return valStr === 'true' || valStr === '1';
 
             case 'string':
                 return String(valeur);
-                
+
             default:
                 return valeur;
         }

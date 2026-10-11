@@ -21,7 +21,7 @@ export function XmlElement<T, V>(nameOrOptions?: string | XmlElementOptions)
         if (typeof nameOrOptions === 'string')
         {
             elementName = nameOrOptions;
-        } 
+        }
         else if (nameOrOptions)
         {
             elementName = nameOrOptions.name ?? nomPropriete;
@@ -37,6 +37,16 @@ export function XmlElement<T, V>(nameOrOptions?: string | XmlElementOptions)
             const elementTypes = (context.metadata[METADATA_KEYS.ELEMENT_TYPES] as Record<string, new () => any>) ?? {};
             elementTypes[nomPropriete] = targetType;
             context.metadata[METADATA_KEYS.ELEMENT_TYPES] = elementTypes;
+        }
+
+        if (typeof nameOrOptions === 'object' && (nameOrOptions.transformRead || nameOrOptions.transformWrite))
+        {
+            const transforms = (context.metadata[METADATA_KEYS.TRANSFORMS] as Record<string, any>) ?? {};
+            transforms[nomPropriete] = {
+                read: nameOrOptions.transformRead,
+                write: nameOrOptions.transformWrite
+            };
+            context.metadata[METADATA_KEYS.TRANSFORMS] = transforms;
         }
     };
 }

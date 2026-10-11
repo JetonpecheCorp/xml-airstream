@@ -67,6 +67,7 @@ export class Stringifier
         const proprieteValeur = metadonnees[METADATA_KEYS.VALUE] as string | undefined;
         const dictionnaireTableaux = (metadonnees[METADATA_KEYS.ARRAYS] as Record<string, any>) || {};
         const ensembleCData = (metadonnees[METADATA_KEYS.CDATA] as Set<string>) || new Set();
+        const dictionnaireTransforms = (metadonnees[METADATA_KEYS.TRANSFORMS] as Record<string, any>) || {};
 
         const indentation = niveau !== undefined ? '  '.repeat(niveau) : '';
         const sautDeLigne = niveau !== undefined ? '\n' : '';
@@ -81,13 +82,18 @@ export class Stringifier
         {
             for (const [cle, val] of proprietes)
             {
-                if (ensembleIgnores.has(cle) || val === undefined || val === null)
+                if (ensembleIgnores.has(cle) || val === undefined || val === null) 
                     continue;
 
                 if (dictionnaireAttributs[cle])
                 {
                     const nomAttribut = dictionnaireAttributs[cle];
-                    morceaux.push(' ', nomAttribut, '="', this.echapperXml(String(val)), '"');
+                    
+                    // transformWrite pour attributs
+                    let valFinale = val;
+                    if (dictionnaireTransforms[cle]?.write) valFinale = dictionnaireTransforms[cle].write(valFinale);
+                    
+                    morceaux.push(' ', nomAttribut, '="', this.echapperXml(String(valFinale)), '"');
                 }
             }
         }
@@ -106,7 +112,13 @@ export class Stringifier
         if (possedeValeurTexte)
         {
             const estCDataValue = ensembleCData.has(proprieteValeur);
-            const val = valeur[proprieteValeur];
+            let val = valeur[proprieteValeur];
+
+            // Application de transformWrite pour @XmlValue
+            if (dictionnaireTransforms[proprieteValeur]?.write)
+                val = dictionnaireTransforms[proprieteValeur].write(val);
+
+            // On l'enveloppe en CDATA ou on l'échappe normalement
             morceaux.push(estCDataValue ? `<![CDATA[${val}]]>` : this.echapperXml(String(val)));
         }
 
@@ -120,9 +132,13 @@ export class Stringifier
                 if (val === undefined || val === null)
                     continue;
 
+                let valFinale = val;
+                if (dictionnaireTransforms[cle]?.write)
+                    valFinale = dictionnaireTransforms[cle].write(valFinale);
+
                 // Traitement pour @XmlArray
                 const configTableau = dictionnaireTableaux[cle];
-                if (configTableau && Array.isArray(val))
+                if (configTableau && Array.isArray(valFinale))
                 {
 
                     // On ouvre la balise parente (rootName) si elle existe (ex: <Addresses>)
@@ -135,7 +151,7 @@ export class Stringifier
                     }
 
                     // On écrit chaque élément avec le nom de balise enfant (itemName)
-                    for (const element of val)
+                    for (const element of valFinale)
                     {
                         this.traiterNoeud(
                             element,
@@ -159,7 +175,7 @@ export class Stringifier
                 // Comportement normal pour les autres balises simples (@XmlElement)
                 const nomBaliseEnfant = dictionnaireElements[cle] || cle;
                 const estProprieteCData = ensembleCData.has(cle);
-                this.traiterNoeud(val, nomBaliseEnfant, morceaux, options, niveau !== undefined ? niveau + 1 : undefined, estProprieteCData);
+                this.traiterNoeud(valFinale, nomBaliseEnfant, morceaux, options, niveau !== undefined ? niveau + 1 : undefined, estProprieteCData);
             }
             if (niveau !== undefined)
                 morceaux.push(indentation);

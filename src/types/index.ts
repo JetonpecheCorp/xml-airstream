@@ -17,7 +17,8 @@ export interface XmlOptions
      * The evaluation is case-insensitive and trims whitespace.
      * If not provided, the default behavior only considers `'true'` and `'1'` as true.
      * 
-     * @default  ['true', '1']
+     * @default  
+     * ['true', '1']
      * 
      * @example
      * trueValues: ['yes', 'oui', 'y', '1', 'true', 'vrai']
@@ -29,6 +30,21 @@ export interface XmlElementOptions<T = any>
 {
     name?: string;
     type?: new () => T;
+    transformRead?: (value: any) => any;
+    transformWrite?: (value: any) => any;
+}
+
+export interface XmlValueOptions 
+{
+    transformRead?: (value: any) => any;
+    transformWrite?: (value: any) => any;
+}
+
+export interface XmlAttributeOptions 
+{
+    name?: string;
+    transformRead?: (value: any) => any;
+    transformWrite?: (value: any) => any;
 }
 
 export interface XmlArrayOptions<T = any> 
@@ -36,6 +52,8 @@ export interface XmlArrayOptions<T = any>
     rootName?: string; 
     itemName: string;
     itemType?: new () => T;
+    transformRead?: (value: any[]) => any[];
+    transformWrite?: (value: any[]) => any[];
 }
 
 /**

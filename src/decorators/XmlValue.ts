@@ -1,3 +1,4 @@
+import { XmlValueOptions } from '../types/index.js';
 import { METADATA_KEYS } from './constants.js';
 
 /**
@@ -5,15 +6,28 @@ import { METADATA_KEYS } from './constants.js';
  * Crucial when an XML node contains both attributes and a text node.
  * 
  * @example
- * \@XmlValue()
+ * \@XmlValue({
+ *     transformRead: (val: string) => val.trim().toUpperCase()
+ * })
  * public amount!: number;
  */
-export function XmlValue<T, V>() 
+export function XmlValue<T, V>(options?: XmlValueOptions)
 {
     return function (_value: undefined, context: ClassFieldDecoratorContext<T, V>) 
     {   
-        // Une balise ne peut avoir qu'une seule valeur textuelle brute.
-        // On stocke donc simplement le nom de la propriété qui la contiendra.
-        context.metadata[METADATA_KEYS.VALUE] = context.name.toString();
+        const nomPropriete = context.name.toString();
+        
+        // On stocke le nom de la propriété qui contiendra la valeur texte
+        context.metadata[METADATA_KEYS.VALUE] = nomPropriete;
+
+        // --- NOUVEAU : Sauvegarde des transformations ---
+        if (options && (options.transformRead || options.transformWrite)) {
+            const transforms = (context.metadata[METADATA_KEYS.TRANSFORMS] as Record<string, any>) ?? {};
+            transforms[nomPropriete] = {
+                read: options.transformRead,
+                write: options.transformWrite
+            };
+            context.metadata[METADATA_KEYS.TRANSFORMS] = transforms;
+        }
     };
 }
