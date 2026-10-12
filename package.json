@@ -1,5 +1,5 @@
 {
-  "name": "xml-airstream",
+  "name": "@jetonpeche/xml-airstream",
   "version": "1.0.0",
   "description": "Fast, zero-dependency streaming XML parser, serializer & decorator-based class mapper using a state-machine lexer.",
   "type": "module",
