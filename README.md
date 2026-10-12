@@ -243,7 +243,7 @@ Integrity and load test measured using `performance.now()` on a typed e-commerce
 
 ### Performance Visualization
 
-![Performance chart](./benchmark-report.svg)
+![Graphique de performance](https://raw.githubusercontent.com/JetonpecheCorp/xml-airstream/main/benchmark-report.svg)
 
 > **Observations:** Character-by-character analysis via the finite-state machine (`EtatLexer`) maintains strictly linear *O(n)* complexity, processing 100,000 entities in under a second without overwhelming the garbage collector (GC). ## Notes for Experienced Developers (Technical)
 

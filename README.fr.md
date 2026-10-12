@@ -244,7 +244,7 @@ Test d'intégrité et de charge mesuré avec `performance.now()` sur une structu
 
 ### Visualisation des Performances
 
-![Graphique de performance](./benchmark-report.svg)
+![Graphique de performance](https://raw.githubusercontent.com/JetonpecheCorp/xml-airstream/main/benchmark-report.svg)
 
 > **Observations :** L'analyse caractère par caractère via l'automate d'états finis (`EtatLexer`) conserve une complexité strictement linéaire *O(n)*, traitant 100 000 entités en moins d'une seconde sans saturer le ramasse-miettes (GC).
 
