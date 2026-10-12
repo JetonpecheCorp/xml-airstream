@@ -20,6 +20,7 @@ export class JsonConverter
         const dictionnaireElements = (metadonnees[METADATA_KEYS.ELEMENTS] as Record<string, string>) || {};
         const dictionnaireAttributs = (metadonnees[METADATA_KEYS.ATTRIBUTES] as Record<string, string>) || {};
         const ensembleIgnores = (metadonnees[METADATA_KEYS.IGNORE] as Set<string>) || new Set();
+        const conditionsIgnore = (metadonnees[METADATA_KEYS.IGNORE_CONDITIONS] as Record<string, any>) || {};
         const proprieteValeur = metadonnees[METADATA_KEYS.VALUE] as string | undefined;
         const dictionnaireTypes = (metadonnees[METADATA_KEYS.ELEMENT_TYPES] as Record<string, new () => any>) || {};
         const dictionnaireTableaux = (metadonnees[METADATA_KEYS.ARRAYS] as Record<string, any>) || {};
@@ -45,25 +46,36 @@ export class JsonConverter
         {
             if (cleXml === '__text__')
             {
-                if (proprieteValeur && !ensembleIgnores.has(proprieteValeur))
+                if (proprieteValeur) 
                 {
-                    let valeurConvertie = this.convertirType(
-                        valeurXml,
-                        typeof instance[proprieteValeur],
-                        instance[proprieteValeur],
-                        options
-                    );
+                    // Vérification si la propriété @XmlValue doit être ignorée
+                    const estIgnore = ensembleIgnores.has(proprieteValeur) || 
+                                      (conditionsIgnore[proprieteValeur]?.ignoreRead && conditionsIgnore[proprieteValeur].ignoreRead(valeurXml));
+                                      
+                    if (!estIgnore)
+                    {
+                        let valeurConvertie = this.convertirType(
+                            valeurXml,
+                            typeof instance[proprieteValeur],
+                            instance[proprieteValeur],
+                            options
+                        );
 
-                    if (dictionnaireTransforms[proprieteValeur]?.read)
-                        valeurConvertie = dictionnaireTransforms[proprieteValeur].read(valeurConvertie);
+                        if (dictionnaireTransforms[proprieteValeur]?.read)
+                            valeurConvertie = dictionnaireTransforms[proprieteValeur].read(valeurConvertie);
 
-                    instance[proprieteValeur] = valeurConvertie;
+                        instance[proprieteValeur] = valeurConvertie;
+                    }
                 }
                 continue;
             }
 
             const nomPropriete = xmlVersPropriete[cleXml] || cleXml;
-            if (ensembleIgnores.has(nomPropriete))
+            
+            const estIgnore = ensembleIgnores.has(nomPropriete) || 
+                              (conditionsIgnore[nomPropriete]?.ignoreRead && conditionsIgnore[nomPropriete].ignoreRead(valeurXml));
+                              
+            if (estIgnore) 
                 continue;
 
             const TypeCible = dictionnaireTypes[nomPropriete];

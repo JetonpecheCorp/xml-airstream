@@ -64,6 +64,7 @@ export class Stringifier
         const dictionnaireElements = (metadonnees[METADATA_KEYS.ELEMENTS] as Record<string, string>) || {};
         const dictionnaireAttributs = (metadonnees[METADATA_KEYS.ATTRIBUTES] as Record<string, string>) || {};
         const ensembleIgnores = (metadonnees[METADATA_KEYS.IGNORE] as Set<string>) || new Set();
+        const conditionsIgnore = (metadonnees[METADATA_KEYS.IGNORE_CONDITIONS] as Record<string, any>) || {};
         const proprieteValeur = metadonnees[METADATA_KEYS.VALUE] as string | undefined;
         const dictionnaireTableaux = (metadonnees[METADATA_KEYS.ARRAYS] as Record<string, any>) || {};
         const ensembleCData = (metadonnees[METADATA_KEYS.CDATA] as Set<string>) || new Set();
@@ -82,7 +83,10 @@ export class Stringifier
         {
             for (const [cle, val] of proprietes)
             {
-                if (ensembleIgnores.has(cle) || val === undefined || val === null) 
+                const estIgnore = ensembleIgnores.has(cle) || 
+                                  (conditionsIgnore[cle]?.ignoreWrite && conditionsIgnore[cle].ignoreWrite(val));
+                                  
+                if (estIgnore || val === undefined || val === null) 
                     continue;
 
                 if (dictionnaireAttributs[cle])
@@ -98,7 +102,14 @@ export class Stringifier
             }
         }
 
-        const proprietesEnfants = proprietes.filter(([cle]) => !dictionnaireAttributs[cle] && !ensembleIgnores.has(cle) && cle !== proprieteValeur);
+        const proprietesEnfants = proprietes.filter(([cle, val]) => 
+        {
+            const estIgnore = ensembleIgnores.has(cle) || 
+                              (conditionsIgnore[cle]?.ignoreWrite && conditionsIgnore[cle].ignoreWrite(val));
+            
+            return !dictionnaireAttributs[cle] && !estIgnore && cle !== proprieteValeur;
+        });
+
         const possedeValeurTexte = proprieteValeur !== undefined && valeur[proprieteValeur] !== undefined;
 
         if (proprietesEnfants.length === 0 && !possedeValeurTexte)

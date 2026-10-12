@@ -8,6 +8,7 @@ export const METADATA_KEYS = {
     ELEMENT_TYPES: 'xml:element_types',
     ATTRIBUTES: 'xml:attributes',
     IGNORE: 'xml:ignore',
+    IGNORE_CONDITIONS: 'xml:ignore_conditions',
     VALUE: 'xml:value',
     ARRAYS: 'xml:arrays',
     CDATA: 'xml:cdata',
