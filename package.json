@@ -22,7 +22,7 @@
     "type": "git",
     "url": "git+https://github.com/JetonpecheCorp/xml-airstream.git"
   },
-"keywords": [
+  "keywords": [
     "xml",
     "xml-parser",
     "streaming",
@@ -41,7 +41,7 @@
   "license": "MIT",
   "readme": "https://github.com/JetonpecheCorp/xml-airstream#readme",
   "devDependencies": {
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "typescript": "^7.0.2"
   }
 }

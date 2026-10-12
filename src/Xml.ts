@@ -31,6 +31,66 @@ export class Xml
     }
 
     /**
+     * Fetches an XML payload from a URL and parses it directly into an instance of the target class.
+     * Uses streaming automatically for maximum performance on large network responses.
+     * 
+     * @template T - The type of the class to instantiate.
+     * @param url - The URL to fetch the XML from.
+     * @param targetClass - The class constructor to map the XML data into.
+     * @param options - Combined HTTP fetch options (RequestInit) and XML parsing options (XmlOptions).
+     * @returns A promise resolving to an instance of the target class.
+     */
+    public static async parseFromUrl<T>(
+        url: string | URL, 
+        targetClass: { new (): T }, 
+        options: XmlOptions & RequestInit = {}
+    ): Promise<T> 
+    {
+        const reponse = await fetch(url, options);
+
+        if (!reponse.ok)
+            throw new Error(`Failed to fetch XML from URL: ${reponse.status} ${reponse.statusText}`);
+
+        if (!reponse.body)
+            throw new Error("The response body is empty.");
+
+        return this.parse(reponse.body, targetClass, options);
+    }
+
+    /**
+     * Reads an XML file from the local file system and parses it directly into an instance of the target class.
+     * Note: This method uses dynamic imports for Node.js/Bun compatibility 
+     * without breaking browser environments.
+     * 
+     * @template T - The type of the class to instantiate.
+     * @param filePath - The absolute or relative path to the XML file.
+     * @param targetClass - The class constructor to map the XML data into.
+     * @param options - XML parsing configuration.
+     * @returns A promise resolving to an instance of the target class.
+     */
+    public static async parseFromFile<T>(
+        filePath: string, 
+        targetClass: { new (): T }, 
+        options: XmlOptions = {}
+    ): Promise<T> 
+    {
+        try
+        {
+            // Importation dynamique du module 'fs/promises' (Node.js/Bun)
+            const moduleFichier = await import('node:fs/promises');
+            
+            // Lecture du fichier entier sous forme de Buffer binaire
+            const buffer = await moduleFichier.readFile(filePath);
+            
+            return this.parse(buffer, targetClass, options);
+        }
+        catch (erreur)
+        {
+            throw new Error(`Unable to read or parse XML file from '${filePath}'. Detail: ${erreur}`);
+        }
+    }
+
+    /**
      * Serializes a class instance into an XML string using its decorators.
      * 
      * @param instance - The class instance to serialize.
