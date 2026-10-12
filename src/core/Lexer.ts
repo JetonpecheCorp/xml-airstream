@@ -1,7 +1,7 @@
 import { XmlToken } from "../types/lexer.js";
 
 
-// Les différents états possibles de notre machine lors de la lecture caractère par caractère.
+// Les différents états possibles de la machine lors de la lecture caractère par caractère.
 enum EtatLexer
 {
     TEXTE,
@@ -37,32 +37,25 @@ export class Lexer
      * @param chunk - A string chunk of XML data.
      * @returns An array of parsed XML tokens.
      */
-    public tokenize(chunk: string): XmlToken[]
+    public tokenize(chunk: string, onToken: (jeton: XmlToken) => void): void
     {
-        const jetons: XmlToken[] = [];
-
         for (let i = 0; i < chunk.length; i++)
         {
             const caractere = chunk[i];
 
             switch (this.etatCourant)
             {
-
                 case EtatLexer.TEXTE:
                     if (caractere === '<')
                     {
-                        // On a fini de lire du texte, on émet le jeton Texte s'il n'est pas vide
                         if (this.tamponTexte.trim().length > 0)
-                        {
-                            jetons.push({ type: 'Text', value: this.tamponTexte.trim() });
-                        }
+                            onToken({ type: 'Text', value: this.tamponTexte.trim() });
+
                         this.tamponTexte = '';
                         this.etatCourant = EtatLexer.BALISE_OUVERTE;
-                    } 
-                    else
-                    {
-                        this.tamponTexte += caractere;
                     }
+                    else
+                        this.tamponTexte += caractere;
                     break;
 
                 case EtatLexer.BALISE_OUVERTE:
@@ -70,12 +63,12 @@ export class Lexer
                     {
                         this.etatCourant = EtatLexer.BALISE_FERMANTE;
                         this.nomBaliseCourante = '';
-                    } 
+                    }
                     else if (caractere === '?' || caractere === '!')
                     {
                         this.etatCourant = EtatLexer.COMMENTAIRE_OU_DECLARATION;
                         this.tamponTexte = caractere;
-                    } 
+                    }
                     else
                     {
                         this.etatCourant = EtatLexer.NOM_BALISE;
@@ -86,46 +79,40 @@ export class Lexer
                     break;
 
                 case EtatLexer.NOM_BALISE:
-                    if (caractere === ' ' || caractere === '\n' || caractere === '\t')
+                    if (caractere === ' ' || caractere === '\n' || caractere === '\t') 
                     {
                         this.etatCourant = EtatLexer.NOM_ATTRIBUT;
                         this.nomAttributCourant = '';
-                    } 
+                    }
                     else if (caractere === '/')
-                    {
                         this.estAutoFermante = true;
-                    } 
+
                     else if (caractere === '>')
                     {
-                        jetons.push(this.creerJetonOuverture());
+                        onToken(this.creerJetonOuverture());
                         this.etatCourant = EtatLexer.TEXTE;
                         this.tamponTexte = '';
-                    } 
-                    else
-                    {
-                        this.nomBaliseCourante += caractere;
                     }
+                    else
+                        this.nomBaliseCourante += caractere;
+
                     break;
 
                 case EtatLexer.NOM_ATTRIBUT:
                     if (caractere === '=')
-                    {
                         this.etatCourant = EtatLexer.RECHERCHE_EGAL;
-                    } 
+
                     else if (caractere === '/')
-                    {
                         this.estAutoFermante = true;
-                    } 
-                    else if (caractere === '>')
+
+                    else if (caractere === '>') 
                     {
-                        jetons.push(this.creerJetonOuverture());
+                        onToken(this.creerJetonOuverture());
                         this.etatCourant = EtatLexer.TEXTE;
                         this.tamponTexte = '';
-                    } 
-                    else if (caractere !== ' ' && caractere !== '\n' && caractere !== '\t')
-                    {
-                        this.nomAttributCourant += caractere;
                     }
+                    else if (caractere !== ' ' && caractere !== '\n' && caractere !== '\t')
+                        this.nomAttributCourant += caractere;
                     break;
 
                 case EtatLexer.RECHERCHE_EGAL:
@@ -133,7 +120,7 @@ export class Lexer
                     {
                         this.guillemetAttribut = caractere;
                         this.etatCourant = EtatLexer.VALEUR_ATTRIBUT;
-                        this.tamponTexte = ''; // On réutilise le tampon pour la valeur
+                        this.tamponTexte = '';
                     }
                     break;
 
@@ -144,48 +131,40 @@ export class Lexer
                         this.nomAttributCourant = '';
                         this.tamponTexte = '';
                         this.etatCourant = EtatLexer.NOM_ATTRIBUT;
-                    } 
-                    else
-                    {
-                        this.tamponTexte += caractere;
                     }
+                    else
+                        this.tamponTexte += caractere;
+
                     break;
 
                 case EtatLexer.BALISE_FERMANTE:
-                    if (caractere === '>')
+                    if (caractere === '>') 
                     {
-                        jetons.push({ type: 'CloseTag', name: this.nomBaliseCourante });
+                        onToken({ type: 'CloseTag', name: this.nomBaliseCourante });
                         this.nomBaliseCourante = '';
                         this.etatCourant = EtatLexer.TEXTE;
-                    } 
-                    else if (caractere !== ' ')
-                    {
-                        this.nomBaliseCourante += caractere;
                     }
+                    else if (caractere !== ' ')
+                        this.nomBaliseCourante += caractere;
                     break;
 
                 case EtatLexer.COMMENTAIRE_OU_DECLARATION:
                     this.tamponTexte += caractere;
-                    
-                    // 1. Détection de l'ouverture d'un bloc CDATA
                     if (this.tamponTexte === '![CDATA[')
                     {
                         this.etatCourant = EtatLexer.CDATA;
                         this.tamponTexte = '';
                     }
-                    // 2. Détection de la fin d'un commentaire <!-- ... -->
                     else if (this.tamponTexte.startsWith('!--') && this.tamponTexte.endsWith('-->'))
                     {
                         this.etatCourant = EtatLexer.TEXTE;
                         this.tamponTexte = '';
                     }
-                    // 3. Détection de la fin d'une déclaration <?xml ... ?>
                     else if (this.tamponTexte.startsWith('?') && this.tamponTexte.endsWith('?>'))
                     {
                         this.etatCourant = EtatLexer.TEXTE;
                         this.tamponTexte = '';
                     }
-                    // 4. Détection de la fin d'un DOCTYPE <!DOCTYPE ... >
                     else if (caractere === '>' && !this.tamponTexte.startsWith('!--') && !this.tamponTexte.startsWith('!['))
                     {
                         this.etatCourant = EtatLexer.TEXTE;
@@ -195,25 +174,25 @@ export class Lexer
 
                 case EtatLexer.CDATA:
                     this.tamponTexte += caractere;
-                    
-                    // On attend la séquence de fermeture stricte du CDATA
                     if (this.tamponTexte.endsWith(']]>'))
                     {
-                        // On extrait tout sauf les 3 derniers caractères (]]>)
                         const contenuCData = this.tamponTexte.slice(0, -3);
-                        
-                        // On émet un jeton Texte, comme si c'était du texte classique
-                        if (contenuCData.length > 0)
-                            jetons.push({ type: 'Text', value: contenuCData });
-                        
+                        if (contenuCData.length > 0) onToken({ type: 'Text', value: contenuCData }); // Callback !
                         this.etatCourant = EtatLexer.TEXTE;
                         this.tamponTexte = '';
                     }
                     break;
             }
         }
+    }
 
-        return jetons;
+    public flush(): void 
+    {
+        if (this.etatCourant === EtatLexer.CDATA)
+            throw new Error("[XML-Airstream] XML malformé : Bloc <![CDATA[ non refermé à la fin du document.");
+
+        if (this.etatCourant !== EtatLexer.TEXTE)
+            throw new Error("[XML-Airstream] XML malformé : Le document s'arrête brutalement au milieu d'une balise.");
     }
 
     /**
@@ -221,14 +200,11 @@ export class Lexer
      */
     private creerJetonOuverture(): XmlToken
     {
-        const jeton: XmlToken = {
+        return {
             type: 'OpenTag',
             name: this.nomBaliseCourante,
             attributes: { ...this.attributsCourants },
             isSelfClosing: this.estAutoFermante
         };
-        // Si la balise est auto-fermante (<Tag/>), le parser aura besoin de savoir
-        // qu'il ne doit pas chercher d'enfants pour cette balise.
-        return jeton;
     }
 }

@@ -5,6 +5,10 @@ export class JsonConverter
 {
     public static mapToClass<T>(ast: JsonNode, targetClass: { new(): T }, options: XmlOptions = {}): T
     {
+        // erreur xml mapping
+        if (!ast || typeof ast !== 'object' || Object.keys(ast).length === 0)
+            throw new Error("[XML-Airstream] Unable to map XML: the document is empty or malformed.");
+
         const metadonnees = (targetClass[Symbol.metadata] || {}) as Record<string, any>;
         const nomRacineAttendue = (metadonnees[METADATA_KEYS.ROOT] as string) || targetClass.name;
         const noeudRacine = ast[nomRacineAttendue] !== undefined ? ast[nomRacineAttendue] : ast;

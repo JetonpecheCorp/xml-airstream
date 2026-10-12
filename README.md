@@ -236,16 +236,18 @@ Integrity and load test measured using `performance.now()` on a typed e-commerce
 
 | Objects Processed | XML Size | Serialization (`stringify`) | Parsing (`parse`) | Parsing Throughput | Allocated RAM |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **10,000** | ~1.98 MB | **60.6 ms** | **168.2 ms** | ~11.8 MB/s | ~55 MB |
-| **25,000** | ~4.99 MB | **94.6 ms** | **422.4 ms** | ~11.8 MB/s | ~46 MB |
-| **50,000** | ~10.02 MB | **220.9 ms** | **790.5 ms** | ~12.7 MB/s | ~103 MB |
-| **100,000** | ~20.07 MB | **375.8 ms** | **970.3 ms** | **~20.7 MB/s** | ~156 MB |
+| **10 000** | ~1.98 Mo | **58.6 ms** | **147.3 ms** | ~13.4 Mo/s | ~28.1 Mo |
+| **25 000** | ~4.99 Mo | **95.5 ms** | **366.1 ms** | ~13.6 Mo/s | **~4.6 Mo** |
+| **50 000** | ~10.02 Mo | **178.9 ms** | **744.5 ms** | ~13.4 Mo/s | ~32.9 Mo |
+| **100 000** | ~20.07 Mo | **379.9 ms** | **961.8 ms** | **~20.8 Mo/s** | ~166.5 Mo |
 
 ### Performance Visualization
 
 ![Graphique de performance](https://raw.githubusercontent.com/JetonpecheCorp/xml-airstream/main/benchmark-report.svg)
 
-> **Observations:** Character-by-character analysis via the finite-state machine (`EtatLexer`) maintains strictly linear *O(n)* complexity, processing 100,000 entities in under a second without overwhelming the garbage collector (GC). ## Notes for Experienced Developers (Technical)
+> **Observations:** Character-by-character analysis via the finite state automaton (possEtatLexerʼ) maintains a strictly linear complexity *O(n)*, processing 100,000 entities in less than a second. The just-in-time architecture greatly minimizes the intermediate memory footprint.
+
+## Notes for Experienced Developers (Technical)
 
 ### 1. Under-the-Hood Implementation (TypeScript 5.0+ Decorators)
 Unlike older versions of TypeScript (which relied on the `experimentalDecorators` flag and the external `reflect-metadata` library), this library relies entirely on the **Stage 3 Decorators API** and the ECMAScript **`Symbol.metadata`** proposal.

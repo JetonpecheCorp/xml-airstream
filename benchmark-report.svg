@@ -27,16 +27,16 @@
         <text x="50" y="394" fill="#64748b" font-size="11" text-anchor="end">0ms</text>
         
         <line x1="60" y1="307.5" x2="740" y2="307.5" stroke="#334155" stroke-dasharray="4" />
-        <text x="50" y="311.5" fill="#64748b" font-size="11" text-anchor="end">279ms</text>
+        <text x="50" y="311.5" fill="#64748b" font-size="11" text-anchor="end">277ms</text>
         
         <line x1="60" y1="225" x2="740" y2="225" stroke="#334155" stroke-dasharray="4" />
-        <text x="50" y="229" fill="#64748b" font-size="11" text-anchor="end">558ms</text>
+        <text x="50" y="229" fill="#64748b" font-size="11" text-anchor="end">553ms</text>
         
         <line x1="60" y1="142.5" x2="740" y2="142.5" stroke="#334155" stroke-dasharray="4" />
-        <text x="50" y="146.5" fill="#64748b" font-size="11" text-anchor="end">837ms</text>
+        <text x="50" y="146.5" fill="#64748b" font-size="11" text-anchor="end">830ms</text>
         
         <line x1="60" y1="60" x2="740" y2="60" stroke="#334155" stroke-dasharray="4" />
-        <text x="50" y="64" fill="#64748b" font-size="11" text-anchor="end">1116ms</text>
+        <text x="50" y="64" fill="#64748b" font-size="11" text-anchor="end">1106ms</text>
         
 
     <!-- Axe X (Nombre d'objets) -->
@@ -55,41 +55,41 @@
     
 
     <!-- Lignes de métriques -->
-    <polyline fill="none" stroke="url(#parseGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="128,340.2565320452213 230,265.07942411356413 400,156.21753021252948 740,103.04347826086956" />
-    <polyline fill="none" stroke="url(#strGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="128,372.0781560162926 230,362.02299602543366 400,324.67103405938997 740,278.86090810103553" />
+    <polyline fill="none" stroke="url(#parseGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="128,346.05251023895414 230,280.77273590279094 400,167.8757221514009 740,103.04347826086956" />
+    <polyline fill="none" stroke="url(#strGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="128,372.51647725731647 230,361.50722829477337 400,336.62453551764355 740,276.6554558029781" />
 
     <!-- Points et infobulles de données -->
     
         <!-- Points Parse -->
-        <circle cx="128" cy="340.2565320452213" r="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
-        <text x="128" y="330.2565320452213" fill="#7dd3fc" font-size="10" text-anchor="middle">168ms</text>
+        <circle cx="128" cy="346.05251023895414" r="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
+        <text x="128" y="336.05251023895414" fill="#7dd3fc" font-size="10" text-anchor="middle">147ms</text>
 
         <!-- Points Stringify -->
-        <circle cx="128" cy="372.0781560162926" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
-        <text x="128" y="390.0781560162926" fill="#6ee7b7" font-size="10" text-anchor="middle">61ms</text>
+        <circle cx="128" cy="372.51647725731647" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
+        <text x="128" y="390.51647725731647" fill="#6ee7b7" font-size="10" text-anchor="middle">59ms</text>
     
         <!-- Points Parse -->
-        <circle cx="230" cy="265.07942411356413" r="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
-        <text x="230" y="255.07942411356413" fill="#7dd3fc" font-size="10" text-anchor="middle">422ms</text>
+        <circle cx="230" cy="280.77273590279094" r="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
+        <text x="230" y="270.77273590279094" fill="#7dd3fc" font-size="10" text-anchor="middle">366ms</text>
 
         <!-- Points Stringify -->
-        <circle cx="230" cy="362.02299602543366" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
-        <text x="230" y="380.02299602543366" fill="#6ee7b7" font-size="10" text-anchor="middle">95ms</text>
+        <circle cx="230" cy="361.50722829477337" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
+        <text x="230" y="379.50722829477337" fill="#6ee7b7" font-size="10" text-anchor="middle">96ms</text>
     
         <!-- Points Parse -->
-        <circle cx="400" cy="156.21753021252948" r="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
-        <text x="400" y="146.21753021252948" fill="#7dd3fc" font-size="10" text-anchor="middle">791ms</text>
+        <circle cx="400" cy="167.8757221514009" r="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
+        <text x="400" y="157.8757221514009" fill="#7dd3fc" font-size="10" text-anchor="middle">745ms</text>
 
         <!-- Points Stringify -->
-        <circle cx="400" cy="324.67103405938997" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
-        <text x="400" y="342.67103405938997" fill="#6ee7b7" font-size="10" text-anchor="middle">221ms</text>
+        <circle cx="400" cy="336.62453551764355" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
+        <text x="400" y="354.62453551764355" fill="#6ee7b7" font-size="10" text-anchor="middle">179ms</text>
     
         <!-- Points Parse -->
         <circle cx="740" cy="103.04347826086956" r="5" fill="#38bdf8" stroke="#0f172a" stroke-width="2" />
-        <text x="740" y="93.04347826086956" fill="#7dd3fc" font-size="10" text-anchor="middle">970ms</text>
+        <text x="740" y="93.04347826086956" fill="#7dd3fc" font-size="10" text-anchor="middle">962ms</text>
 
         <!-- Points Stringify -->
-        <circle cx="740" cy="278.86090810103553" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
-        <text x="740" y="296.86090810103553" fill="#6ee7b7" font-size="10" text-anchor="middle">376ms</text>
+        <circle cx="740" cy="276.6554558029781" r="5" fill="#34d399" stroke="#0f172a" stroke-width="2" />
+        <text x="740" y="294.6554558029781" fill="#6ee7b7" font-size="10" text-anchor="middle">380ms</text>
     
 </svg>

@@ -3,6 +3,7 @@ import { Stringifier } from './core/Stringifier.js';
 import { JsonConverter } from './core/jsonConverter.js';
 import { Lexer } from './core/Lexer.js';
 import { Parser } from './core/Parser.js';
+import { XmlToken } from './types/lexer.js';
 
 /**
  * High-performance, dependency-free XML processor.
@@ -115,8 +116,10 @@ export class Xml
         const lexer = new Lexer();
         const parser = new Parser(options);
 
+        const onToken = (jeton: XmlToken) => parser.consume(jeton);
+
         // CAS 1 : L'entrée est un flux asynchrone (ex: fetch response.body)
-        if (input instanceof ReadableStream) 
+        if (input instanceof ReadableStream)
         {
             const lecteur = input.getReader();
             const decodeur = new TextDecoder(options?.encoding || 'utf-8');
@@ -125,13 +128,11 @@ export class Xml
             while (!fini) 
             {
                 const { value, done } = await lecteur.read();
-
                 fini = done;
                 if (value) 
                 {
                     const chunkTexte = decodeur.decode(value, { stream: !fini });
-                    const jetons = lexer.tokenize(chunkTexte);
-                    parser.consume(jetons);
+                    lexer.tokenize(chunkTexte, onToken);
                 }
             }
         } 
@@ -140,9 +141,11 @@ export class Xml
         {
             const decodeur = new TextDecoder(options?.encoding || 'utf-8');
             const texteComplet = decodeur.decode(input);
-            const jetons = lexer.tokenize(texteComplet);
-            parser.consume(jetons);
+            lexer.tokenize(texteComplet, onToken);
         }
+
+        // valide que le XML s'est bien terminé
+        lexer.flush();
 
         return parser.getAst();
     }

@@ -237,16 +237,16 @@ Test d'intégrité et de charge mesuré avec `performance.now()` sur une structu
 
 | Objets traités | Poids XML | Sérialisation (`stringify`) | Parsing (`parse`) | Débit Parsing | Mémoire RAM allouée |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **10 000** | ~1.98 Mo | **60.6 ms** | **168.2 ms** | ~11.8 Mo/s | ~55 Mo |
-| **25 000** | ~4.99 Mo | **94.6 ms** | **422.4 ms** | ~11.8 Mo/s | ~46 Mo |
-| **50 000** | ~10.02 Mo | **220.9 ms** | **790.5 ms** | ~12.7 Mo/s | ~103 Mo |
-| **100 000** | ~20.07 Mo | **375.8 ms** | **970.3 ms** | **~20.7 Mo/s** | ~156 Mo |
+| **10 000** | ~1.98 Mo | **58.6 ms** | **147.3 ms** | ~13.4 Mo/s | ~28.1 Mo |
+| **25 000** | ~4.99 Mo | **95.5 ms** | **366.1 ms** | ~13.6 Mo/s | **~4.6 Mo** |
+| **50 000** | ~10.02 Mo | **178.9 ms** | **744.5 ms** | ~13.4 Mo/s | ~32.9 Mo |
+| **100 000** | ~20.07 Mo | **379.9 ms** | **961.8 ms** | **~20.8 Mo/s** | ~166.5 Mo |
 
 ### Visualisation des Performances
 
 ![Graphique de performance](https://raw.githubusercontent.com/JetonpecheCorp/xml-airstream/main/benchmark-report.svg)
 
-> **Observations :** L'analyse caractère par caractère via l'automate d'états finis (`EtatLexer`) conserve une complexité strictement linéaire *O(n)*, traitant 100 000 entités en moins d'une seconde sans saturer le ramasse-miettes (GC).
+> **Observations :** L'analyse caractère par caractère via l'automate d'états finis (`EtatLexer`) conserve une complexité strictement linéaire *O(n)*, traitant 100 000 entités en moins d'une seconde. L'architecture en flux tendu minimise fortement l'empreinte mémoire intermédiaire.
 
 ## Notes pour les Développeurs Expérimentés (Technique)
 
